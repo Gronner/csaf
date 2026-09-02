@@ -12,6 +12,16 @@ use std::fmt::{Display, Formatter};
 pub enum CsafLanguage {
     Valid(ValidCsafLanguage),
     Invalid(String, CsafLanguageError),
+    Empty
+}
+
+impl CsafLanguage {
+    pub fn is_empty(&self) -> bool {
+        match self {
+            CsafLanguage::Valid(_) | CsafLanguage::Invalid(_, _) => false,
+            CsafLanguage::Empty => true,
+        }
+    }
 }
 
 impl Display for CsafLanguage {
@@ -19,6 +29,7 @@ impl Display for CsafLanguage {
         match self {
             Self::Valid(lang) => write!(f, "{lang}"),
             Self::Invalid(lang, _) => write!(f, "{lang}"),
+            Self::Empty => write!(f, ""),
         }
     }
 }
@@ -28,6 +39,7 @@ impl PartialEq for CsafLanguage {
         match (self, other) {
             (Self::Valid(a), Self::Valid(b)) => a == b,
             (Self::Invalid(a, _), Self::Invalid(b, _)) => a.eq_ignore_ascii_case(b),
+            (Self::Empty, Self::Empty) => true,
             _ => false,
         }
     }
@@ -47,6 +59,10 @@ impl From<&LangT21> for CsafLanguage {
 
 impl From<&String> for CsafLanguage {
     fn from(input_lang_tag: &String) -> Self {
+        // Catch string is empty
+        if input_lang_tag.is_empty() {
+            return Self::Empty
+        }
         // Try to parse the input with oxilangtag
         let parsed_lang_tag: LanguageTag<String> = match LanguageTag::parse(input_lang_tag.clone()) {
             Ok(lang_tag) => lang_tag,
@@ -207,7 +223,25 @@ mod tests {
     // Do we want to consider variants for equality (in this case, does the currency
     // being set to CAD matter to the document?)
     #[case("en-US", "en-US-u-cu-cad")]
+    #[case("", "en-US-u-cu-cad")]
     fn test_languages_not_equal(#[case] a: &str, #[case] b: &str) {
         assert_ne!(CsafLanguage::from(&a.to_string()), CsafLanguage::from(&b.to_string()));
+    }
+
+    #[rstest]
+    fn test_empty_string_creates_empty_variant() {
+        assert_eq!(CsafLanguage::from(&"".to_string()), CsafLanguage::Empty);
+    }
+
+    #[rstest]
+    fn test_empty_variant_is_empty() {
+        assert!(CsafLanguage::Empty.is_empty());
+    }
+
+    #[rstest]
+    #[case("en-US")] // Valid vs Invalid
+    #[case("en-QK")] // Invalid vs Valid (default)
+    fn test_non_empty_variant_is_not_empty(#[case] input: &str) {
+        assert!(!CsafLanguage::from(&input.to_string()).is_empty());
     }
 }

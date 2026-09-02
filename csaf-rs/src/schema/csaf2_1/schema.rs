@@ -4062,6 +4062,7 @@ pub struct DocumentLevelMetaData {
     pub csaf_version: CsafVersion,
     pub distribution: RulesForDocumentSharing,
     ///Identifies the language used by this document, corresponding to IETF BCP 47 / RFC 5646.
+    // TODO: Identify how to deserialize a missing and an empty string differently
     #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
     pub lang: ::std::option::Option<LangT>,
     ///Contains the SPDX license expression for the CSAF document.

@@ -44,7 +44,7 @@ fn license_listed_in_spdx_licensedb(license: &LicenseExpression) -> bool {
 
 fn is_english_or_default(doc: &impl CsafTrait) -> bool {
     match doc.get_document().get_lang() {
-        Some(CsafLanguage::Invalid(_, _)) => false,
+        Some(CsafLanguage::Invalid(_, _)) | Some(CsafLanguage::Empty) => false,
         Some(CsafLanguage::Valid(valid_lang)) => valid_lang.is_default() || valid_lang.is_english(),
         None => true,
     }

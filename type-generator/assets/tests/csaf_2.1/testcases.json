@@ -697,6 +697,12 @@
     {
       "id": "6.2.12",
       "group": "recommended",
+      "failures": [
+        {
+          "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-12-s01.json",
+          "valid": true
+        }
+      ],
       "valid": [
         {
           "name": "recommended/csaf-rs_csaf-csaf_2_1-6-2-12-s11.json",

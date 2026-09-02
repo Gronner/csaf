@@ -110,6 +110,7 @@ impl From<&csaf::csaf::types::csaf_datetime::CsafDateTime> for CsafDateTime {
 pub enum CsafLanguage {
     Valid { value: String },
     Invalid { value: String },
+    Empty { value: String },
 }
 
 impl From<&csaf::csaf::types::language::CsafLanguage> for CsafLanguage {
@@ -118,6 +119,7 @@ impl From<&csaf::csaf::types::language::CsafLanguage> for CsafLanguage {
         match l {
             L::Valid(v) => Self::Valid { value: v.to_string() },
             L::Invalid(s, _) => Self::Invalid { value: s.clone() },
+            L::Empty => Self::Empty { value: "".to_string() }
         }
     }
 }
